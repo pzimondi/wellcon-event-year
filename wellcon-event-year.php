@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WellCON Event Year
  * Description: Auto-updating event year. Use [event_year] in pages, or {event_year} in titles, menus, product names and Gravity Forms. Rolls to next year after the event season.
- * Version: 1.1
+ * Version: 1.2
  * Author: SMPLFY
  */
 
@@ -57,6 +57,7 @@ function wellcon_year_form( $form ) {
 		$field->label       = wellcon_year_token( $field->label );
 		$field->description = wellcon_year_token( $field->description );
 		$field->content     = wellcon_year_token( $field->content );
+		$field->defaultValue = wellcon_year_token( $field->defaultValue );
 		if ( is_array( $field->choices ) ) {
 			foreach ( $field->choices as $i => $choice ) {
 				$field->choices[ $i ]['text'] = wellcon_year_token( $choice['text'] );
