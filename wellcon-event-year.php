@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: WellCON Event Year
- * Description: Auto-updating event year. Use [event_year] in pages, or {event_year} in titles, menus, product names and Gravity Forms. Rolls to next year after the event season.
- * Version: 1.2
+ * Description: Auto-updating event year and edition. Use [event_year]/[event_edition] in pages, or {event_year}/{event_edition} in titles, menus, product names and Gravity Forms. Rolls over after the event season.
+ * Version: 1.3
  * Author: SMPLFY
  */
 
@@ -16,15 +16,29 @@ function wellcon_event_year() {
 	return current_time( 'm-d' ) >= WELLCON_ROLLOVER ? $year + 1 : $year;
 }
 
+// First WellCON (then CryoCON) was 2021, so 2027 is the 7th.
+const WELLCON_FIRST_YEAR = 2020;
+
+function wellcon_event_edition() {
+	$n = wellcon_event_year() - WELLCON_FIRST_YEAR;
+	$suffix = ( $n % 100 >= 11 && $n % 100 <= 13 ) ? 'th' : array( 'th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th' )[ $n % 10 ];
+	return $n . $suffix;
+}
+
 function wellcon_year_token( $text ) {
-	if ( is_string( $text ) && strpos( $text, '{event_year}' ) !== false ) {
-		return str_replace( '{event_year}', wellcon_event_year(), $text );
+	if ( ! is_string( $text ) ) return $text;
+	if ( strpos( $text, '{event_year}' ) !== false ) {
+		$text = str_replace( '{event_year}', wellcon_event_year(), $text );
+	}
+	if ( strpos( $text, '{event_edition}' ) !== false ) {
+		$text = str_replace( '{event_edition}', wellcon_event_edition(), $text );
 	}
 	return $text;
 }
 
 // [event_year] shortcode.
 add_shortcode( 'event_year', 'wellcon_event_year' );
+add_shortcode( 'event_edition', 'wellcon_event_edition' );
 
 // {event_year} token in site text (frontend only, so editors still see the token).
 if ( ! is_admin() || wp_doing_ajax() ) {
